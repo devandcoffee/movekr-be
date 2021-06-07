@@ -18,7 +18,9 @@ defmodule Movekr.Accounts do
 
   """
   def list_users do
-    Repo.all(User)
+    User
+    |> Repo.all()
+    |> Repo.preload(:projects)
   end
 
   @doc """
