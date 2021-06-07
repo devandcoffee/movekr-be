@@ -5,8 +5,13 @@ defmodule MovekrWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", MovekrWeb do
+  scope "/" do
     pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: MovekrWeb.Schema,
+      interface: :simple,
+      context: %{pubsub: MovekrWeb.Endpoint}
   end
 
   # Enables LiveDashboard only for development
