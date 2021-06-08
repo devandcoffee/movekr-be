@@ -10,7 +10,7 @@ defmodule MovekrWeb.Router do
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: MovekrWeb.Schema,
-      interface: :simple,
+      interface: :playground,
       context: %{pubsub: MovekrWeb.Endpoint}
   end
 
