@@ -5,7 +5,7 @@ config :movekr, Movekr.Repo,
   username: "admin",
   password: "admin",
   database: "movekrdb",
-  hostname: "localhost",
+  hostname: "138.197.207.195",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
