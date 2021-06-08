@@ -44,7 +44,8 @@ defmodule Movekr.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:phoenix_live_reload, "~> 1.3"}
     ]
   end
 
@@ -59,6 +60,7 @@ defmodule Movekr.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      start: ["deps.get", "phx.server"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end

@@ -4,7 +4,7 @@ defmodule MovekrWeb.Schema do
   alias MovekrWeb.AccountsResolver
   alias MovekrWeb.ProjectsResolver
 
-  import_types Movekr.Schema.DataTypes
+  import_types(Movekr.Schema.DataTypes)
 
   query do
     @desc "Get all users"
@@ -24,6 +24,12 @@ defmodule MovekrWeb.Schema do
     field :create_project, :project do
       arg(:project, non_null(:input_project))
       resolve(&ProjectsResolver.create_project/3)
+    end
+
+    @desc "Create a new columns"
+    field :create_columns, list_of(:column) do
+      arg(:columns, non_null(:input_columns))
+      resolve(&ProjectsResolver.create_columns/3)
     end
   end
 end

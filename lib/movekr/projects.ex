@@ -113,8 +113,10 @@ defmodule Movekr.Projects do
       [%Column{}, ...]
 
   """
-  def list_columns do
-    Repo.all(Column)
+  def list_columns!(project_id) do
+    Column
+    |> where([c], c.project_id == ^project_id)
+    |> Repo.all()
   end
 
   @doc """
@@ -149,6 +151,39 @@ defmodule Movekr.Projects do
     %Column{}
     |> Column.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @spec create_columns(atom | %{:names => any, optional(any) => any}) :: any
+  @doc """
+  Creates a list of columns.
+
+  ## Examples
+
+      iex> create_columns(%{field: value})
+      {:ok, [%Column{}]}
+
+      iex> create_columns(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_columns(args) do
+    columns =
+      Enum.map(args.names, fn name ->
+        timestamp =
+          NaiveDateTime.utc_now()
+          |> NaiveDateTime.truncate(:second)
+
+        %{
+          name: name,
+          project_id: String.to_integer(args.project_id),
+          inserted_at: timestamp,
+          updated_at: timestamp
+        }
+      end)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert_all(:insert_all, Column, columns)
+    |> Repo.transaction()
   end
 
   @doc """
