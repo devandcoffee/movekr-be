@@ -2,7 +2,7 @@ defmodule Movekr.Projects do
   @moduledoc """
   The Projects context.
   """
-
+  require Logger
   import Ecto.Query, warn: false
   alias Movekr.Repo
 
@@ -168,7 +168,11 @@ defmodule Movekr.Projects do
   """
   def create_columns(args) do
     columns =
-      Enum.map(args.names, fn name ->
+      Enum.with_index(
+        args.names,
+        fn name, index -> {index, name} end
+      )
+      |> Enum.map(fn {index, name} ->
         timestamp =
           NaiveDateTime.utc_now()
           |> NaiveDateTime.truncate(:second)
@@ -176,13 +180,14 @@ defmodule Movekr.Projects do
         %{
           name: name,
           project_id: String.to_integer(args.project_id),
+          order: index + 1,
           inserted_at: timestamp,
           updated_at: timestamp
         }
       end)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.insert_all(:insert_all, Column, columns)
+    |> Ecto.Multi.insert_all(:insert_all, Column, columns, returning: true)
     |> Repo.transaction()
   end
 
