@@ -1,0 +1,25 @@
+[package]
+name = "movekr-be"
+version = "0.1.0"
+authors = ["Matias Novoa <matias.novoa@tecnoandina.cl>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+diesel = { version = "1.4.7", features = ["postgres", "r2d2", "chrono"] }
+dotenv = "0.15.0"
+env_logger = "0.8.4"
+itconfig = { version = "1.1.0", features = ["macro"] }
+lazy_static = "1.4.0"
+log = "0.4.14"
+rocket = "0.4.10"
+serde = "1.0.126"
+serde_derive = "1.0.126"
+serde_json = "1.0.64"
+
+[dependencies.rocket_contrib]
+version = "0.4.10"
+default-features = false
+features = ["json"]
