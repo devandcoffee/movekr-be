@@ -1,19 +1,27 @@
+use chrono::NaiveDateTime;
 use diesel;
 use diesel::prelude::*;
+use diesel::select;
 use diesel::PgConnection;
-use chrono::NaiveDateTime;
 
 pub use crate::db::schema::users;
 
-#[derive(AsChangeset, Queryable, Identifiable, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(
+  AsChangeset,
+  Insertable,
+  Queryable,
+  Identifiable,
+  Debug,
+  Clone,
+  PartialEq,
+  Serialize,
+  Deserialize,
+)]
 #[table_name = "users"]
 pub struct User {
   pub id: i64,
   pub name: Option<String>,
   pub mail: Option<String>,
-  pub password: Option<String>,
-  pub inserted_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Insertable, Serialize, Deserialize)]
@@ -25,19 +33,39 @@ pub struct NewUser {
 }
 
 impl User {
-  // pub fn create(
-  //   new_user: NewUser,
-  //   connection: &PgConnection,
-  // ) -> QueryResult<User> {
-  //   diesel::insert_into(users::table).values(&new_user).get_result(connection)
-  // }
+  pub fn create(
+    new_user: NewUser,
+    connection: &PgConnection,
+  ) -> QueryResult<User> {
+    let now = select(diesel::dsl::now)
+      .get_result::<NaiveDateTime>(connection)?;
+    diesel::insert_into(users::table)
+      .values((
+        &new_user,
+        users::inserted_at.eq(now),
+        users::updated_at.eq(now),
+      ))
+      .returning((users::id, users::name, users::mail))
+      .get_result(connection)
+  }
 
-  // pub fn get_user(id: i32, connection: &PgConnection) -> QueryResult<User> {
-  //   users::table.find(id).first::<User>(connection)
-  // }
+  pub fn get_user(
+    id: i64,
+    connection: &PgConnection,
+  ) -> QueryResult<User> {
+    users::table
+      .select((users::id, users::name, users::mail))
+      .find(id)
+      .first::<User>(connection)
+  }
 
-  pub fn get_all_users(connection: &PgConnection) -> QueryResult<Vec<User>> {
-    users::table.order(users::id).load::<User>(connection)
+  pub fn get_all_users(
+    connection: &PgConnection,
+  ) -> QueryResult<Vec<User>> {
+    users::table
+      .select((users::id, users::name, users::mail))
+      .order(users::id)
+      .load::<User>(connection)
   }
 
   // pub fn update(id: i32, user: User, connection: &PgConnection) -> bool {
